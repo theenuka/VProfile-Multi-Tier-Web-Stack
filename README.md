@@ -1,75 +1,73 @@
-# Technical Project Report: VProfile Multi-Tier Web Stack
+# VProfile Multi-Tier Web Stack (Manual Provisioning)
 
 ## Project Overview
 
-This project involves the manual deployment of a robust, multi-tier web application stack named "VProfile" in a local virtualized environment. The objective was to orchestrate five distinct Virtual Machines to handle specific architectural layers, ensuring a deep understanding of service interdependencies and manual provisioning.
+This project documents the manual deployment of the VProfile multi-tier application in a local virtualized environment. Five VMs are provisioned to isolate each service tier, highlighting service dependencies, configuration flow, and end-to-end deployment.
 
-## 1. Architecture & Technology Stack
+## Architecture & Technology Stack
 
 The system follows a classic multi-tier architecture where each service is isolated for scalability and security.
 
 - **Virtualization & Orchestration:** Oracle VM VirtualBox and Vagrant.
-- **Web Tier:** Nginx acting as a Web Service and Reverse Proxy.
-- **Application Tier:** Apache Tomcat serving as the Java Application Server.
+- **Web Tier:** Nginx acting as a web server and reverse proxy.
+- **Application Tier:** Apache Tomcat serving the Java application.
 - **Messaging/Brokerage:** RabbitMQ for queuing and broker services.
-- **Caching Layer:** Memcached for database caching to optimize performance.
+- **Caching Layer:** Memcached for database caching.
 - **Database Tier:** MySQL/MariaDB for relational data storage.
 
 ### Architecture Diagram
 
 ![Architecture Diagram](docs/images/architecture-diagram.png)
 
-## 2. Implementation Roadmap
+## Implementation Roadmap
 
-The setup followed a strict dependency based order to ensure backend services were available before the application tier attempted to connect.
+The deployment order follows service dependencies so that backend services are ready before the application tier connects.
 
-### Step 1: Environment Setup
+### 1) Environment Setup
 
-Configured the vagrant-hostmanager plugin to automate host mapping, allowing the VMs to communicate via internal DNS (hostnames) instead of static IPs.
+Configured the vagrant-hostmanager plugin to enable VM-to-VM name resolution via hostnames instead of static IPs.
 
 ![Vagrant Status](docs/images/vagrant-status.png)
 
-### Step 2: Backend Provisioning (DB, MC, RMQ)
+### 2) Database Provisioning (MariaDB)
 
-#### Database:
-Setup MariaDB on db01, initialized the accounts database, and configured firewall port 3306.
+Initialized the accounts database, verified schema load, and ensured port 3306 access.
 
 ![Database Tables](docs/images/database-tables.png)
 
-#### Memcached:
-Configured on mc01 to listen on port 11211 and updated configuration to allow global listening.
+![Database List](docs/images/databases-list.png)
 
-#### RabbitMQ:
-Setup on rmq01 with a dedicated "test" administrator user.
+### 3) Cache and Messaging
 
-![Memcached and RabbitMQ Setup](docs/images/memcached-rabbitmq.png)
+Configured Memcached to listen on port 11211 and validated the service startup.
 
-### Step 3: Application Deployment (Tomcat & Maven)
+![Memcached Status](docs/images/memcached-status.png)
 
-Deployed Java 17 and Tomcat 10 on app01. Built the application from source using Maven, generating a .war artifact which was then deployed to the Tomcat webapps directory.
+Provisioned RabbitMQ with a dedicated administrative user and validated service status.
+
+![RabbitMQ Status](docs/images/rabbitmq-status.png)
+
+### 4) Application Server (Tomcat)
+
+Installed Java 17 and Tomcat 10 on app01 and validated the Tomcat service.
+
+![Tomcat Status](docs/images/tomcat-status.png)
+
+### 5) Build and Deployment (Maven)
+
+Built the application from source using Maven and deployed the generated .war into Tomcat.
 
 ![Maven Build Success](docs/images/maven-build.png)
 
-### Step 4: Web Proxy Configuration
+### 6) Web Proxy Configuration (Nginx)
 
-Nginx was configured on web01 as a reverse proxy. A configuration file was created to load balance and proxy requests to the Tomcat application server on port 8080.
+Configured Nginx on web01 as a reverse proxy and verified the service status.
 
-![Nginx Configuration](docs/images/nginx-config.png)
-
-## 3. Key Technical Competencies Demonstrated
-
-**Linux Administration:**
-Proficient in package management (dnf, apt), service handling (systemctl), and permissions.
-
-**Network Security:**
-Implementing host-based firewalls using firewalld to secure service ports.
-
-**Infrastructure as Code (Intro):**
-Using Vagrant for reproducible environment creation.
+![Nginx Status](docs/images/nginx-status.png)
 
 ## Application Screenshots
 
-### Final Application Login Page
+### Login Page
 
 ![Login Page](docs/images/login-page.png)
 
@@ -81,10 +79,16 @@ Using Vagrant for reproducible environment creation.
 
 ![Users List](docs/images/users-list.png)
 
-### User Details (Data from DB and Cache)
+### User Details (DB + Cache)
 
 ![User Details](docs/images/user-details.png)
 
 ### RabbitMQ Integration
 
 ![RabbitMQ Initiated](docs/images/rabbitmq-initiated.png)
+
+## Key Technical Competencies Demonstrated
+
+- **Linux Administration:** Package management, service control, and permissions.
+- **Network Security:** Host-based firewall rules to secure service ports.
+- **Infrastructure as Code (Intro):** Reproducible VM provisioning with Vagrant.
