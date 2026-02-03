@@ -1,0 +1,37 @@
+# Build output
+target/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Claude AI
+.claude/
+
+# Vagrant
+.vagrant/
+*.box
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env
+*.env.local
+
+# Compiled files
+*.class
+*.jar
+*.war
+!src/main/resources/*.war
+
+# Maven
+dependency-reduced-pom.xml
